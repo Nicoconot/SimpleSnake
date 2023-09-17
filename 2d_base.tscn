@@ -1,0 +1,166 @@
+[gd_scene load_steps=12 format=3 uid="uid://bk1h0sqykv0l7"]
+
+[ext_resource type="Script" path="res://Scripts/RefGrid.cs" id="1_8ceci"]
+[ext_resource type="Texture2D" uid="uid://coamb02jkkcrr" path="res://Sprites/snake_head.png" id="1_toj8y"]
+[ext_resource type="Script" path="res://Scripts/MainMenu.cs" id="2_qp4ln"]
+[ext_resource type="Theme" uid="uid://il2vkjkykgq6" path="res://Themes/ButtonTheme.tres" id="3_bn67c"]
+[ext_resource type="Texture2D" uid="uid://v5bhc27kyfrq" path="res://Sprites/snake_head_open.png" id="3_gispg"]
+[ext_resource type="Texture2D" uid="uid://dh07402dmaed3" path="res://Sprites/snake_body.png" id="3_vbmw3"]
+[ext_resource type="Script" path="res://Scripts/Snake.cs" id="4_e6gu0"]
+[ext_resource type="FontFile" uid="uid://cb028wecarddi" path="res://Fonts/Wellbutrin/Welbut__.ttf" id="4_inytl"]
+[ext_resource type="Script" path="res://Scripts/SnakeBody.cs" id="6_m2xf3"]
+[ext_resource type="Texture2D" uid="uid://b3uc88v38qfwv" path="res://Sprites/food.png" id="7_fh10t"]
+[ext_resource type="Script" path="res://Scripts/GameManager.cs" id="8_wuoq0"]
+
+[node name="2DBase" type="Node2D"]
+
+[node name="Playground" type="Polygon2D" parent="."]
+position = Vector2(47, 93)
+color = Color(0.541176, 0.682353, 0.305882, 1)
+polygon = PackedVector2Array(0, 0, 1040, 0, 1040, 520, 0, 520)
+
+[node name="Border" type="Line2D" parent="Playground"]
+z_index = -1
+points = PackedVector2Array(0, 0, 1040, 0, 1040, 520, 0, 520, 0, 0)
+width = 20.0
+default_color = Color(0.117188, 0.160156, 0.160156, 1)
+end_cap_mode = 1
+
+[node name="Head_Container" type="Node2D" parent="Playground"]
+
+[node name="Snake" type="Sprite2D" parent="Playground/Head_Container" node_paths=PackedStringArray("bodyContainer", "background", "food")]
+position = Vector2(560, 320)
+scale = Vector2(5, 5)
+texture = ExtResource("1_toj8y")
+script = ExtResource("4_e6gu0")
+bodyContainer = NodePath("../../Snake_bodies")
+background = NodePath("../..")
+food = NodePath("../../FoodContainer/Food")
+closedMouthTexture = ExtResource("1_toj8y")
+openMouthTexture = ExtResource("3_gispg")
+
+[node name="Snake_bodies" type="Node2D" parent="Playground"]
+
+[node name="Body_1" type="Sprite2D" parent="Playground/Snake_bodies"]
+position = Vector2(520, 320)
+scale = Vector2(5, 5)
+texture = ExtResource("3_vbmw3")
+script = ExtResource("6_m2xf3")
+
+[node name="FoodContainer" type="Node2D" parent="Playground"]
+
+[node name="Food" type="Sprite2D" parent="Playground/FoodContainer"]
+position = Vector2(400, 360)
+scale = Vector2(5, 5)
+texture = ExtResource("7_fh10t")
+
+[node name="Canvas" type="Control" parent="Playground"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 271.0
+offset_top = 78.0
+offset_right = 311.0
+offset_bottom = 118.0
+
+[node name="GridContainer" type="GridContainer" parent="Playground/Canvas" node_paths=PackedStringArray("baseRect")]
+visible = false
+layout_mode = 0
+offset_left = -271.0
+offset_top = -78.0
+offset_right = 769.0
+offset_bottom = 522.0
+theme_override_constants/h_separation = 1
+theme_override_constants/v_separation = 1
+columns = 26
+script = ExtResource("1_8ceci")
+baseRect = NodePath("ColorRect")
+
+[node name="ColorRect" type="ColorRect" parent="Playground/Canvas/GridContainer"]
+custom_minimum_size = Vector2(39, 39)
+layout_mode = 2
+color = Color(0.482353, 0.552941, 0.341176, 1)
+
+[node name="Menus" type="Control" parent="Playground/Canvas" node_paths=PackedStringArray("mainMenuParent", "gameOverMenuParent", "startGameButton", "restartButton", "scoreText")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_qp4ln")
+mainMenuParent = NodePath("MainMenu")
+gameOverMenuParent = NodePath("GameOverMenu")
+startGameButton = NodePath("MainMenu/Start")
+restartButton = NodePath("GameOverMenu/Restart")
+scoreText = NodePath("Score")
+
+[node name="MainMenu" type="Control" parent="Playground/Canvas/Menus"]
+layout_mode = 1
+anchor_left = 2.125
+anchor_right = 10.275
+anchor_bottom = 2.65
+offset_right = -3.05176e-05
+
+[node name="Start" type="Button" parent="Playground/Canvas/Menus/MainMenu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.953
+offset_bottom = -0.0180054
+theme = ExtResource("3_bn67c")
+text = "Start Game"
+
+[node name="GameOverMenu" type="Control" parent="Playground/Canvas/Menus"]
+visible = false
+layout_mode = 1
+anchor_right = 12.025
+anchor_bottom = 7.4
+offset_right = -3.05176e-05
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Playground/Canvas/Menus/GameOverMenu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.145
+anchor_right = 0.998
+anchor_bottom = 0.5
+offset_top = 0.079998
+offset_right = -0.0380249
+theme_override_colors/font_color = Color(0.117188, 0.160156, 0.160156, 1)
+theme_override_fonts/font = ExtResource("4_inytl")
+theme_override_font_sizes/font_size = 50
+text = "GAME OVER"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Restart" type="Button" parent="Playground/Canvas/Menus/GameOverMenu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.218
+anchor_top = 0.53
+anchor_right = 0.78
+anchor_bottom = 0.872
+offset_left = 0.141998
+offset_top = 0.119995
+offset_right = -0.180023
+offset_bottom = -0.112
+theme = ExtResource("3_bn67c")
+text = "Try Again"
+
+[node name="Score" type="Label" parent="Playground/Canvas/Menus"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -5.975
+anchor_top = -3.725
+anchor_right = -2.225
+anchor_bottom = -2.45
+offset_left = 1.52588e-05
+theme_override_colors/font_color = Color(0.117188, 0.160156, 0.160156, 1)
+theme_override_fonts/font = ExtResource("4_inytl")
+theme_override_font_sizes/font_size = 35
+text = "Score: 1"
+vertical_alignment = 1
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("8_wuoq0")
