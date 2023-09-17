@@ -19,11 +19,6 @@ public partial class SnakeBody : Sprite2D
 		QueueMovement(initialPos, initialRotation);
 	}
 
-	public void AddBody(SnakeBody next)
-	{
-		nextBody = next;
-	}
-
 	public void QueueMovement(Vector2 nextPos, float newRotation)
 	{
 		nextPosition = nextPos;

@@ -94,11 +94,12 @@ public partial class Snake : Sprite2D
 
 		if (debugFaster) moveTime /= 2;
 
+		//Initiating first body configs
 		var firstBody = bodyContainer.GetChild<SnakeBody>(0);
 		bodies.Add(firstBody);
 		firstBody.Init(new Vector2(Position.X - tileSize, Position.Y), firstBody.Rotation);
-		var sprite = this as Sprite2D;
-		sprite.Texture = closedMouthTexture;
+		
+		ChangeHeadTexture(false);
 		GD.Print("Snake initialized");
 		ready = true;
 		moveDirectly = true;
@@ -142,6 +143,22 @@ public partial class Snake : Sprite2D
 		}
 	}
 
+	void Cleanup()
+	{
+		Position = initialPos;
+
+		food.Visible = true;
+		MoveFood();
+
+		for (int i = 2; i < bodies.Count; i++)
+		{
+			bodies[i].QueueFree();
+		}
+		
+		AdjustSpeed();
+	}
+
+	#region Head
 	void MoveHead()
 	{
 		if(moveDirectly) bodies[0].QueueMovement(Position, Rotation);
@@ -152,6 +169,7 @@ public partial class Snake : Sprite2D
 
 		if (moveDirectly)
 		{
+			//This is to avoid a bug where, on the first movement of the head, the body would lag behind one frame
 			bodies[0].Move();
 			moveDirectly = false;
 		}
@@ -163,6 +181,20 @@ public partial class Snake : Sprite2D
 		CheckIfAteFood();
 		CheckIfCloseToFood();
 	}
+	void ChangeHeadTexture(bool open)
+	{
+		var sprite = this as Sprite2D;
+		if (open)
+		{
+			sprite.Texture = openMouthTexture;
+		}
+		else
+		{
+			sprite.Texture = closedMouthTexture;
+		}
+	}
+	#endregion
+	#region Bodies
 	async Task MoveChildren()
 	{
 		await ToSignal(GetTree().CreateTimer(moveTime), SceneTreeTimer.SignalName.Timeout);
@@ -186,35 +218,20 @@ public partial class Snake : Sprite2D
 		bodies.Add(childscript);
 		bodyContainer.AddChild(child);
 	}
-	
-	void Cleanup()
-	{
-		Position = initialPos;
-
-		food.Visible = true;
-		MoveFood();
-
-		for (int i = 2; i < bodies.Count; i++)
-		{
-			bodies[i].QueueFree();
-		}
-		
-		AdjustSpeed();
-	}
+	#endregion
 	
 	#region Food
 
 	void CheckIfCloseToFood()
 	{
-		var sprite = this as Sprite2D;
 		float xDistance = Mathf.Abs(Position.X - food.Position.X);
 		float yDistance = Mathf.Abs(Position.Y - food.Position.Y);
 
 		if (xDistance + yDistance < tileSize * 3)
 		{
-			sprite.Texture = openMouthTexture;
+			ChangeHeadTexture(true);
 		}
-		else sprite.Texture = closedMouthTexture;
+		else ChangeHeadTexture(false);
 	}
 	void CheckIfAteFood()
 	{

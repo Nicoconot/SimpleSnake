@@ -5,7 +5,7 @@ using SimpleSnake;
 public partial class GameManager : Node
 {
 	public static GameManager instance;
-	public static GameState gameState = GameState.Menu;
+	public static GameState gameState = GameState.Menu; //Not really used for now
 
 	public static Action OnGameStarted, OnGameOver, OnScoreUpdated;
 
@@ -46,5 +46,4 @@ public partial class GameManager : Node
 		score = 1;
 		OnScoreUpdated?.Invoke();
 	}
-	
 }
